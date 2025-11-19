@@ -1,8 +1,54 @@
+"use client";
+
 import { Globe } from "@/components/ui/globe";
 import { BackgroundBeams } from "@/components/ui/background-beams";
 import { Input } from "@/components/ui/input";
+import { useState } from "react";
 
 export default function Home() {
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const handleNotify = async () => {
+    if (!email) {
+      setMessage("Please enter your email");
+      return;
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setMessage("Please enter a valid email");
+      return;
+    }
+
+    setIsLoading(true);
+    setMessage("");
+
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (response.ok) {
+        setMessage("Thank you! We'll notify you when we launch.");
+        setEmail("");
+      } else {
+        setMessage("Something went wrong. Please try again.");
+      }
+    } catch (error) {
+      setMessage("Failed to submit. Please try again.");
+      console.error("Error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="relative h-screen w-full bg-black flex flex-col items-center justify-start overflow-hidden">
 
@@ -13,7 +59,7 @@ export default function Home() {
 
       {/* Subtext - gray, larger, multi-line */}
       <p className="text-gray-400 max-w-3xl mx-auto mt-6 text-base md:text-lg text-center relative z-20 px-4 leading-relaxed">
-      {/* “AI-powered legal advice, automation, and compliance — all at LawWorld.ai. */}
+      {/* "AI-powered legal advice, automation, and compliance — all at LawWorld.ai. */}
       {/* Chat with database, judgment research, drafting, case management, smart steno, commentary, and translation — all powered by LawWorld.ai. */}
       Chat about any legal query, perform judgment research, drafting, smart steno, commentary, and translation — all AI-powered, with case management built right into LawWorld.ai.
       </p>
@@ -25,6 +71,10 @@ export default function Home() {
     <Input
       type="email"
       placeholder="Enter your email"
+      value={email}
+      onChange={(e) => setEmail(e.target.value)}
+      onKeyDown={(e) => e.key === "Enter" && handleNotify()}
+      disabled={isLoading}
       className="
         flex-1 
         text-base md:text-lg 
@@ -37,6 +87,8 @@ export default function Home() {
     />
 
     <button
+      onClick={handleNotify}
+      disabled={isLoading}
       className="
         w-full sm:w-auto
         inline-flex items-center justify-center 
@@ -49,12 +101,18 @@ export default function Home() {
         focus-visible:outline-none 
         focus-visible:ring-2 focus-visible:ring-neutral-600 
         focus-visible:ring-offset-2 focus-visible:ring-offset-black
+        disabled:opacity-50 disabled:cursor-not-allowed
       "
     >
-      Notify Me
+      {isLoading ? "Submitting..." : "Notify Me"}
     </button>
 
   </div>
+  {message && (
+    <p className={`mt-3 text-sm text-center ${message.includes("Thank you") ? "text-green-400" : "text-red-400"}`}>
+      {message}
+    </p>
+  )}
 </div>
 
 
