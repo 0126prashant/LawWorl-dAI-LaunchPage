@@ -54,7 +54,7 @@ export default function Home() {
 
       {/* Heading - large, white, bold */}
       <h1 className="relative z-20 mt-24 text-5xl md:text-7xl lg:text-8xl text-white text-center font-sans font-bold tracking-tight px-4">
-         Launching soon
+         Launching on 22nd Jan 2026
       </h1>
 
       {/* Subtext - gray, larger, multi-line */}
