@@ -1,5 +1,4 @@
 "use client";
-
 import { Globe } from "@/components/ui/globe";
 import { BackgroundBeams } from "@/components/ui/background-beams";
 import { Input } from "@/components/ui/input";
